@@ -1,0 +1,77 @@
+[
+  {
+    "group": {
+      "name": "plugin:notification_manager_plugin"
+    },
+    "setting": {
+      "description": "Whether to send notifications",
+      "is_translatable": true,
+      "name": "notification_manager_send",
+      "pretty_name": "Send notifications",
+      "type": "boolean"
+    },
+    "value": {
+      "default": ""
+    }
+  },
+  {
+    "group": {
+      "name": "plugin:notification_manager_plugin"
+    },
+    "setting": {
+      "description": "The URL to notify on article publication",
+      "is_translatable": true,
+      "name": "notification_manager_url",
+      "pretty_name": "Notification URL for connecting to the notification manager",
+      "type": "char"
+    },
+    "value": {
+      "default": ""
+    }
+  },
+  {
+    "group": {
+      "name": "plugin:notification_manager_plugin"
+    },
+    "setting": {
+      "description": "The authentication URL to use when authenticating with the notification service.",
+      "is_translatable": true,
+      "name": "notification_manager_authorization_url",
+      "pretty_name": "Authorization URL for connecting to the notification manager",
+      "type": "char"
+    },
+    "value": {
+      "default": ""
+    }
+  },
+  {
+    "group": {
+      "name": "plugin:notification_manager_plugin"
+    },
+    "setting": {
+      "description": "The email to authorize with the notification manager",
+      "is_translatable": true,
+      "name": "notification_manager_email",
+      "pretty_name": "The email credential",
+      "type": "char"
+    },
+    "value": {
+      "default": "your@email.com"
+    }
+  },
+  {
+    "group": {
+      "name": "plugin:notification_manager_plugin"
+    },
+    "setting": {
+      "description": "The password to authorize with the notification manager",
+      "is_translatable": true,
+      "name": "notification_manager_password",
+      "pretty_name": "The password credential",
+      "type": "char"
+    },
+    "value": {
+      "default": ""
+    }
+  }
+]
