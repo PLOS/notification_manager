@@ -10,7 +10,7 @@ from plugins.notification_manager.logic import get_plugin_settings, save_plugin_
 @decorators.has_journal
 def manager(request):
     """
-    The manager view for the OAS plugin.
+    The manager view for the Notification Manager plugin.
     :param request: the request object
     """
     (

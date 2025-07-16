@@ -2,6 +2,8 @@ import json
 
 import requests
 from django.contrib import messages
+
+from journal.models import Journal
 from plugins.notification_manager.models import NotificationMessage
 from utils import setting_handler
 from utils.logger import get_logger
@@ -174,26 +176,39 @@ def build_header():
 
     }
 
-def get_plugin_settings(journal):
+def get_plugin_settings(journal: Journal):
     """
     Get the plugin settings for the Notification Manager.
     :param journal: the journal
     """
+
+    logger.debug("Fetching journal settings for the following journal: %s", journal.id)
     notification_manager_enabled = setting_handler.get_setting(
-        "plugin:notification_manager_plugin", "notification_manager_send", journal
-    )
+        setting_group_name="plugin:notification_manager_plugin",
+        setting_name="notification_manager_send",
+        journal=journal,
+        default=False,
+    ).processed_value
     notification_manager_email = setting_handler.get_setting(
-        "plugin:notification_manager_plugin", "notification_manager_email", journal
-    )
+        "plugin:notification_manager_plugin",
+        setting_name="notification_manager_email",
+        journal=journal
+    ).processed_value
     notification_manager_password = setting_handler.get_setting(
-        "plugin:notification_manager_plugin", "notification_manager_password", journal
-    )
+        "plugin:notification_manager_plugin",
+        setting_name="notification_manager_password",
+        journal=journal
+    ).processed_value
     notification_manager_url = setting_handler.get_setting(
-        "plugin:notification_manager_plugin", "notification_manager_url", journal
-    )
+        "plugin:notification_manager_plugin",
+        setting_name="notification_manager_url",
+        journal=journal
+    ).processed_value
     notification_manager_authorization_url = setting_handler.get_setting(
-        "plugin:notification_manager_plugin", "notification_manager_authorization_url", journal
-    )
+        "plugin:notification_manager_plugin",
+        setting_name="notification_manager_authorization_url",
+        journal=journal
+    ).processed_value
 
     return (
         notification_manager_enabled,
