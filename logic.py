@@ -1,4 +1,5 @@
 import json
+from contextlib import nullcontext
 
 import requests
 from django.contrib import messages
@@ -24,6 +25,7 @@ def send_message(request, body):
         notification_manager_password,
         notification_manager_url,
         notification_manager_authorization_url,
+        notification_manager_authenticate_send,
     ) = get_plugin_settings(request.journal)
 
     message = NotificationMessage()
@@ -33,19 +35,20 @@ def send_message(request, body):
     if not url_to_use.endswith("/"):
         url_to_use += "/"
 
-    # try authorization
-    token, success = authorize(notification_manager_email, notification_manager_password, notification_manager_authorization_url)
-    if not success:
-        message.authorized = False
-        message.save()
-        messages.add_message(
-            request,
-            messages.ERROR,
-            "Failed to authorize.",
-        )
-        return
-
-    message.authorized = True
+    token = None
+    message.authorized = False
+    if not notification_manager_authenticate_send:
+        # try authorization
+        token, success = authorize(notification_manager_email, notification_manager_password, notification_manager_authorization_url)
+        if not success:
+            message.save()
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "Failed to authorize.",
+            )
+            return
+        message.authorized = True
 
     payload = build_payload(body)
 
@@ -139,7 +142,8 @@ def send_payload(payload, token, url_to_use):
     :param token: the bearer token to use
     :param url_to_use: the base URL to use
     """
-    headers = {"Authorization": "Bearer " + token}
+    if token is not None:
+        headers = {"Authorization": "Bearer " + token}
     message_url = f"{url_to_use}message"
 
     r = requests.post(
@@ -209,6 +213,11 @@ def get_plugin_settings(journal: Journal):
         setting_name="notification_manager_authorization_url",
         journal=journal
     ).processed_value
+    notification_manager_authenticate_send = setting_handler.get_setting(
+        "plugin:notification_manager_plugin",
+        setting_name="notification_manager_authenticate_send",
+        journal=journal
+    ).processed_value
 
     return (
         notification_manager_enabled,
@@ -216,6 +225,7 @@ def get_plugin_settings(journal: Journal):
         notification_manager_password,
         notification_manager_url,
         notification_manager_authorization_url,
+        notification_manager_authenticate_send,
     )
 
 def save_plugin_settings(
@@ -224,6 +234,7 @@ def save_plugin_settings(
         notification_manager_password,
         notification_manager_url,
         notification_manager_authorization_url,
+        notification_manager_authenticate_send,
         request,
 ):
     """
@@ -233,6 +244,7 @@ def save_plugin_settings(
     :param notification_manager_password: the password
     :param notification_manager_authorization_url: the authentication URL
     :param notification_manager_url: the live URL
+    :param notification_manager_authenticate_send: True if authenticated messages should be sent, false otherwise.
     :param request: the request object (to specify the journal)
     """
     setting_handler.save_setting(
@@ -240,6 +252,12 @@ def save_plugin_settings(
         setting_name="notification_manager_send",
         journal=request.journal,
         value=notification_manager_enabled,
+    )
+    setting_handler.save_setting(
+        setting_group_name="plugin:notification_manager_plugin",
+        setting_name="notification_manager_authenticate_send",
+        journal=request.journal,
+        value=notification_manager_authenticate_send,
     )
     setting_handler.save_setting(
         setting_group_name="plugin:notification_manager_plugin",

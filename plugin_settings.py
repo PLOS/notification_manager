@@ -41,13 +41,27 @@ def register_for_events():
     from events import logic as events_logic
     events_logic.Events.register_for_event(
         events_logic.Events.ON_ARTICLE_SUBMITTED, # The event to be registered for
-        example_event_func, # The function to be called
+        publication_event, # The function to be called
     )
     pass
 
-def example_event_func(**kwargs):
+def publication_event(**kwargs):
+    # note that import must be here to avoid circular imports
+    from plugins.notification_manager import logic
+
     request = kwargs.get('request')
     article = kwargs.get('article')
     # do something here
 
-    print("Article submitted!")
+    body = {
+        "data": [
+            {
+                "document_type": "article",
+                "id": article.id,
+            },
+        ],
+    }
+
+    logic.send_message(request, body)
+
+

@@ -19,6 +19,7 @@ def manager(request):
         notification_manager_password,
         notification_manager_url,
         notification_manager_authorization_url,
+        notification_manager_authenticate_send,
     ) = get_plugin_settings(request.journal)
 
     if request.POST:
@@ -30,6 +31,7 @@ def manager(request):
             notification_manager_password = form.cleaned_data["password"]
             notification_manager_url = form.cleaned_data["url"]
             notification_manager_authorization_url = form.cleaned_data["authentication_url"]
+            notification_manager_authenticate_send = form.cleaned_data["authentication_enabled"]
 
             save_plugin_settings(
                 notification_manager_enabled,
@@ -37,6 +39,7 @@ def manager(request):
                 notification_manager_password,
                 notification_manager_url,
                 notification_manager_authorization_url,
+                notification_manager_authenticate_send,
                 request,
             )
 
@@ -48,12 +51,13 @@ def manager(request):
                 "password": notification_manager_password,
                 "url": notification_manager_url,
                 "authentication_url": notification_manager_authorization_url,
+                "authentication_enabled": notification_manager_authenticate_send,
             }
         )
 
     template = "notification_manager/manager.html"
     context = {
-        "form": form,
+        "form": form
     }
 
     return render(request, template, context)
